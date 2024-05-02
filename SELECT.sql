@@ -3,8 +3,8 @@
 -- Самая длинная песня
 SELECT song.name as "Название", song.duration as "Продолжительность в сек."
 FROM music.song
-ORDER BY song.duration DESC
-LIMIT 1;
+WHERE song.duration = (SELECT max(song.duration) from music.song)
+ORDER BY song.name ASC;
 
 -- Название треков, продолжительность которых не менее 3,5 минут.
 SELECT song.name as "Название", song.duration as "Продолжительность в сек."
@@ -55,11 +55,13 @@ GROUP BY album.id;
 
 
 --Все исполнители, которые не выпустили альбомы в 2020 году.
-SELECT distinct(artist.name) as "Артист"
-FROM music.artist
+SELECT artist.name AS "Артист"
+FROM music.artist WHERE artist.name NOT IN 
+(SELECT distinct(artist.name)
+FROM music.artist 
 INNER JOIN music.artist_to_album on artist.id = artist_to_album.artist_id
 INNER JOIN music.album on artist_to_album.album_id = album_id
-WHERE album.published not between '01-01-2020' and '01-01-2021';
+WHERE album.published >= '2020-01-01' and album.published < '2021-01-01');
 
 --Названия сборников, в которых присутствует конкретный исполнитель (выберите его сами).
 SELECT distinct(collection.name)
